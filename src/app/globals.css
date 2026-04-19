@@ -2166,3 +2166,474 @@ a,
 .quiz-option.correct {
   animation: quiz-correct-flash 0.6s ease-out;
 }
+
+/* ========================================
+   PAGE ENTRANCE ANIMATION (page-flip effect)
+   ======================================== */
+
+@keyframes page-flip-enter {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(3deg) translateX(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) rotateX(0deg) translateX(0);
+  }
+}
+
+.page-enter {
+  animation: page-flip-enter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ========================================
+   GOLDEN PULSE (box-shadow pulse in amber)
+   ======================================== */
+
+@keyframes golden-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(218, 165, 32, 0.15),
+                0 0 16px rgba(212, 165, 116, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(218, 165, 32, 0.3),
+                0 0 32px rgba(212, 165, 116, 0.15);
+  }
+}
+
+.golden-pulse {
+  animation: golden-pulse 2s ease-in-out infinite;
+}
+
+/* ========================================
+   ENHANCED DROP CAP (gold gradient background)
+   ======================================== */
+
+.story-drop-cap-enhanced::first-letter {
+  float: left;
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  font-size: 3.4em;
+  line-height: 0.78;
+  padding-right: 0.1em;
+  padding-top: 0.04em;
+  padding-left: 0.04em;
+  padding-bottom: 0.02em;
+  margin-right: 0.04em;
+  color: #0a0a0f;
+  font-weight: 700;
+  background: linear-gradient(145deg, #e8c87a 0%, #d4a574 40%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 4px rgba(212, 165, 116, 0.25))
+          drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+/* ========================================
+   CHOICE HOVER ENHANCED (lift + golden accent)
+   ======================================== */
+
+.choice-hover-enhanced {
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s ease;
+}
+
+.choice-hover-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35),
+              0 0 20px rgba(212, 165, 116, 0.08);
+}
+
+/* Golden left-border accent on choice buttons */
+.choice-hover-enhanced::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, #e8c87a, #d4a574, #b8860b);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  box-shadow: 0 0 8px rgba(218, 165, 32, 0.3);
+}
+
+.choice-hover-enhanced:hover::after {
+  opacity: 1;
+  animation: golden-pulse 2s ease-in-out infinite;
+}
+
+/* ========================================
+   CHOICE BADGE GOLDEN RING (circular golden ring)
+   ======================================== */
+
+.choice-badge-ring {
+  position: relative;
+}
+
+.choice-badge-ring::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  background: linear-gradient(135deg, rgba(232, 200, 122, 0.6), rgba(184, 134, 11, 0.4)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.group:hover .choice-badge-ring::after {
+  opacity: 1;
+}
+
+/* ========================================
+   ENDING GLOW (soft radial glow behind emoji)
+   ======================================== */
+
+.ending-glow {
+  position: relative;
+}
+
+.ending-glow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 165, 116, 0.15) 0%,
+    rgba(218, 165, 32, 0.08) 40%,
+    transparent 70%
+  );
+  animation: ending-glow-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes ending-glow-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   ENDING TITLE FLOAT ANIMATION
+   ======================================== */
+
+@keyframes title-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.ending-title-float {
+  animation: title-float 4s ease-in-out infinite;
+}
+
+/* ========================================
+   REPLAY BUTTON GRADIENT BORDER
+   ======================================== */
+
+.restart-gradient-border {
+  position: relative;
+  z-index: 0;
+  border: none;
+  background: none;
+}
+
+.restart-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    #e8c87a 0%,
+    #d4a574 30%,
+    #b8860b 50%,
+    #d4a574 70%,
+    #e8c87a 100%
+  );
+  background-size: 200% 200%;
+  animation: gradient-border-shift 3s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.restart-gradient-border:hover::before {
+  opacity: 1;
+}
+
+@keyframes gradient-border-shift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ========================================
+   ORNAMENT BOTTOM (diamond separator at end of story text)
+   ======================================== */
+
+.ornament-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 28px;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  max-width: 160px;
+  opacity: 0.6;
+}
+
+.ornament-bottom::before,
+.ornament-bottom::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 165, 116, 0.2) 30%,
+    rgba(212, 165, 116, 0.35) 50%,
+    rgba(212, 165, 116, 0.2) 70%,
+    transparent 100%
+  );
+}
+
+.ornament-bottom-diamond {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6px;
+  height: 6px;
+  margin: 0 10px;
+  background: linear-gradient(135deg, #d4a574, #b8860b);
+  transform: rotate(45deg);
+  box-shadow: 0 0 4px rgba(212, 165, 116, 0.25);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   GLASS CARD HOVER (lift effect on hover)
+   ======================================== */
+
+.glass-card-hover {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.35s ease,
+              background 0.35s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35),
+              0 0 24px rgba(212, 165, 116, 0.08);
+}
+
+/* ========================================
+   STORY HINT SYSTEM (lantern glow for idle readers)
+   ======================================== */
+
+/* Container — fixed at bottom center, above the footer */
+.story-hint-container {
+  position: fixed;
+  bottom: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.story-hint-container.story-hint-visible {
+  opacity: 1;
+}
+
+.story-hint-container.story-hint-fading {
+  opacity: 0;
+}
+
+/* Lantern orb — radial glow with pulsing animation */
+.story-hint-orb {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-hint-orb-core {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 210, 100, 0.9) 0%,
+    rgba(218, 165, 32, 0.6) 40%,
+    rgba(212, 165, 116, 0.2) 70%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 12px rgba(218, 165, 32, 0.4),
+    0 0 24px rgba(212, 165, 116, 0.2),
+    0 0 48px rgba(212, 165, 116, 0.1);
+  animation: story-hint-pulse 2.5s ease-in-out infinite;
+}
+
+.story-hint-orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(218, 165, 32, 0.1);
+  box-shadow:
+    0 0 20px rgba(218, 165, 32, 0.06),
+    inset 0 0 20px rgba(212, 165, 116, 0.03);
+  animation: story-hint-ring-expand 3s ease-in-out infinite;
+}
+
+/* Glow pulse animation */
+@keyframes story-hint-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+    box-shadow:
+      0 0 12px rgba(218, 165, 32, 0.3),
+      0 0 24px rgba(212, 165, 116, 0.15),
+      0 0 48px rgba(212, 165, 116, 0.05);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    box-shadow:
+      0 0 18px rgba(218, 165, 32, 0.5),
+      0 0 36px rgba(212, 165, 116, 0.25),
+      0 0 60px rgba(212, 165, 116, 0.1);
+  }
+}
+
+/* Outer ring expanding/fading */
+@keyframes story-hint-ring-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+/* Hint text — gentle reveal */
+.story-hint-text {
+  margin-top: 12px;
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: rgba(218, 165, 32, 0.65);
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 12px rgba(218, 165, 32, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  animation: story-hint-text-reveal 1s ease-out forwards;
+}
+
+@keyframes story-hint-text-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Small dots that indicate choice count */
+.story-hint-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.story-hint-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(218, 165, 32, 0.4);
+  animation: story-hint-dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes story-hint-dot-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+    box-shadow: 0 0 6px rgba(218, 165, 32, 0.3);
+  }
+}
+
+/* Continue page — subtle downward arrow */
+.story-hint-continue-arrow {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(212, 165, 116, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(218, 165, 32, 0.06) 0%,
+    transparent 70%
+  );
+  animation: story-hint-arrow-bounce 2s ease-in-out infinite;
+}
+
+@keyframes story-hint-arrow-bounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 0.8;
+  }
+}

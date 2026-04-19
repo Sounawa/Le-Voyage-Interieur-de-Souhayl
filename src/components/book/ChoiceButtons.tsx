@@ -119,7 +119,7 @@ export default function ChoiceButtons({ choices, onChoose }: ChoiceButtonsProps)
               handleMouseLeave(index);
             }}
             onMouseMove={(e) => handleMouseMove(e, index)}
-            className={`group relative w-full text-left px-5 py-4 sm:px-6 sm:py-5 rounded-xl overflow-hidden transition-all duration-400 active:scale-[0.98]
+            className={`group choice-hover-enhanced relative w-full text-left px-5 py-4 sm:px-6 sm:py-5 rounded-xl overflow-hidden transition-all duration-400 active:scale-[0.98]
               ${hoveredIndex === index ? 'glass-card gradient-border' : 'glass-card'}`}
           >
             {/* Initial shimmer reveal animation */}
@@ -196,7 +196,7 @@ export default function ChoiceButtons({ choices, onChoose }: ChoiceButtonsProps)
 
             <div className="relative flex items-start gap-4">
               {/* Number indicator with decorative badge */}
-              <div className="choice-badge shrink-0 w-7 h-7 rounded-full border border-amber-700/30 bg-amber-950/40 flex items-center justify-center mt-0.5">
+              <div className="choice-badge choice-badge-ring shrink-0 w-7 h-7 rounded-full border border-amber-700/30 bg-amber-950/40 flex items-center justify-center mt-0.5">
                 <span className="text-amber-500/60 text-xs font-serif font-bold group-hover:text-amber-400/80 transition-colors duration-300">
                   {index + 1}
                 </span>

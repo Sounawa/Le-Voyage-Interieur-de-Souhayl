@@ -1,6 +1,6 @@
 # Le Voyage Intérieur de Souhayl - Worklog
 
-## Project Status: ✅ Phase 8 Complete — Sound Effects, Quiz, Styling Polish
+## Project Status: ✅ Phase 9 Complete — Wiring, Hints, Transition Sound, Styling
 
 ### Current Status Assessment
 The interactive book is feature-rich with comprehensive polish:
@@ -8,10 +8,10 @@ The interactive book is feature-rich with comprehensive polish:
 - **20 choice points** with exactly 3 choices each, all valid paths
 - **4 distinct endings** (Light, Wisdom, Shadow, Pure/Integration)
 - **6 AI-generated illustrations** at key story moments
-- **29 React components** across the application (up from 26)
-- **4 custom hooks** (useTTS, useSwipeNavigation, + 2 existing)
-- **~10,817 lines of TypeScript/CSS code** in core files
-- **Lint: ✅ Clean** | **Compilation: ✅ Passes** (HTTP 200, 23KB page)
+- **31 React components** across the application (up from 29)
+- **4 custom hooks** (useTTS, useSwipeNavigation + 2 existing)
+- **~11,782 lines of TypeScript/CSS code** in core files
+- **Lint: ✅ Clean** | **Compilation: ✅ Passes** (HTTP 200, 24KB page)
 - **Runtime: ✅ No errors in dev log**
 
 ### Architecture
@@ -50,7 +50,9 @@ src/
 │   ├── FocusModeToggle.tsx     # Immersive reading mode toggle
 │   ├── ChoiceSound.tsx         # Dual-tone chime on choice selection
 │   ├── AchievementSound.tsx    # Ascending arpeggio on achievement unlock
-│   └── SpiritualQuiz.tsx       # 10-question quiz mini-game panel
+│   ├── SpiritualQuiz.tsx       # 10-question quiz mini-game panel
+│   ├── StoryHint.tsx           # Idle hint lantern for younger readers
+│   └── ChapterTransitionSound.tsx # Mystical chapter transition SFX
 ├── data/
 │   ├── story-data.ts           # 1837 lines, 167 pages, 20 choices
 │   └── achievements.ts         # 10 achievement definitions
@@ -139,7 +141,7 @@ src/
 ### Story Stats
 - Pages: 167 | Choice points: 20 | Endings: 4 | Achievements: 12 | Quiz Questions: 10
 - Characters: Souhayl, Zaki, Moulay, Nafs, Waswās
-- Components: 29 | Hooks: 4 | Total core LOC: ~10,817
+- Components: 31 | Hooks: 4 | Total core LOC: ~11,782
 
 ### Phase 7+8 Changes (Recent Sessions)
 
@@ -217,24 +219,110 @@ src/
 
 ### Verification Results
 - ✅ `bun run lint` — Zero errors, zero warnings
-- ✅ Dev server: HTTP 200, 23KB page, no runtime errors
-- ✅ All 29 components exist and import correctly
+- ✅ Dev server: HTTP 200, 24KB page, no runtime errors
+- ✅ All 31 components exist and import correctly
 - ✅ All 4 hooks functional
 - ✅ Store persists all settings (TTS, focus mode, achievements, volume, bookmarks)
 - ✅ Map import collision bug fixed
+- ✅ AchievementSound wired into AchievementNotification
+- ✅ Swipe navigation wired into page.tsx
+- ✅ TTS auto-play wired into TTSNarration
+
+### Phase 9 Changes
+
+#### Wiring Tasks (3 completed)
+
+**1. AchievementSound → AchievementNotification**
+- AchievementNotification now accepts `soundRef` prop
+- When a toast is shown, `playAchievementSound()` is called automatically
+- Ascending C5-E5-G5 arpeggio plays on every achievement unlock
+
+**2. useSwipeNavigation → page.tsx**
+- Swipe hook connected via refs (to avoid stale closures with useCallback)
+- Swipe left = continue (blocked on choice pages)
+- Swipe right = go back
+- 50px threshold, 300ms debounce
+- Touch handlers attached to `<main>` element
+
+**3. TTS Auto-Play**
+- TTSNarration reads `ttsAutoPlay` from store
+- When paragraphs change and auto-play is enabled, narration auto-starts
+- Small 100ms delay to ensure voices are loaded
+- Manual play auto-expands the TTS panel
+
+#### New Features (2)
+
+**4. Story Hint System (StoryHint.tsx)**
+- Choice pages: lantern glow after 15s, text hint "Que ferais-tu, Souhayl ?" after 25s
+- Continue pages: subtle bouncing arrow after 8s
+- Resets on any user interaction (click, keydown, touch, scroll, mousemove)
+- Lantern glow effect with pulsing orb + expanding ring
+- Pointer-events: none, non-intrusive
+
+**5. Chapter Transition Sound (ChapterTransitionSound.tsx)**
+- 3-layer synthesized sound: drone (150Hz) + ascending shimmer (C4→E4→G4) + chime (C5)
+- Wired at all 3 chapter transition points in page.tsx
+- Respects soundEnabled and soundVolume settings
+
+#### Styling Improvements (Phase 9)
+
+**StoryPageView:**
+- Page-flip entrance animation (rotateX + fade from right)
+- Enhanced paragraph text-shadow for readability
+- Decorative bottom ornament (diamond separator)
+
+**ChoiceButtons:**
+- Hover lift effect (translateY -2px) + enhanced shadow
+- Golden left-border accent with pulse on hover
+- Enhanced choice letter badge with golden ring
+
+**EndingScreen:**
+- Radial glow behind ending emoji (mood-colored)
+- Floating title animation (4s gentle float)
+- Gradient border effect on replay button hover
+
+**New CSS Classes:**
+- `.page-enter`, `.golden-pulse`, `.story-drop-cap-enhanced`
+- `.choice-hover-enhanced`, `.choice-badge-ring`
+- `.ending-glow`, `.ending-title-float`, `.restart-gradient-border`
+- `.ornament-bottom`, `.ornament-bottom-diamond`, `.glass-card-hover`
 
 ### Risks & Next Steps
-1. **AchievementSound integration**: Wire into AchievementNotification component
-2. **Swipe integration**: Connect useSwipeNavigation hook to page.tsx
-3. **TTS auto-play**: Auto-start narration on each page (store setting exists, needs wiring)
+1. ~~**AchievementSound integration**: Wire into AchievementNotification component~~ ✅ Done in Phase 9
+2. ~~**Swipe integration**: Connect useSwipeNavigation hook to page.tsx~~ ✅ Done in Phase 9
+3. ~~**TTS auto-play**: Auto-start narration on each page~~ ✅ Done in Phase 9
 4. **More illustrations**: Add AI images for bridge, mirrors, Nafs encounter, Zaki meeting
 5. **Tome 2**: Expand with new chapters and spiritual concepts
 6. **Hidden 5th ending**: Special ending triggered by specific tag combinations
 7. **Performance**: Optimize particle animations for low-end devices
 8. **Glossary expansion**: Add Arabic script for each term
-9. **Chapter transition sound**: Custom sound when entering new chapters
+9. ~~**Chapter transition sound**: Custom sound when entering new chapters~~ ✅ Done in Phase 9
 10. **Accessibility**: Full screen reader support, ARIA live regions
 11. **Print/PDF**: Export journey as a formatted PDF document
+12. **Reading streaks**: Track consecutive reading sessions
+13. **Mini-map**: Show story path visualization with branching
+
+---
+Task ID: 9-main
+Agent: Phase 9 Orchestrator
+Task: Wiring existing features + new features + styling polish
+
+Work Log:
+- Wired AchievementSound into AchievementNotification (soundRef prop + playAchievementSound on toast)
+- Wired useSwipeNavigation into page.tsx via refs pattern (handleContinueRef, handleGoBackRef)
+- Wired TTS auto-play into TTSNarration (watches paragraphsKey + ttsAutoPlay from store)
+- Fixed stale closure lint errors (React Compiler preserve-manual-memoization)
+- Fixed duplicate handleGoBack from swipe handler integration
+- Launched 3 parallel subagents: StoryHint, ChapterTransitionSound, Phase 9 Styling
+- All subagents completed successfully, all lint-clean
+- Updated worklog with Phase 9 status
+
+Stage Summary:
+- 3 wiring tasks completed (AchievementSound, Swipe, TTS auto-play)
+- 2 new features (StoryHint lantern, ChapterTransitionSound)
+- Comprehensive styling polish (page-enter, choice-hover, ending-glow, etc.)
+- 31 components, 4 hooks, ~11,782 LOC
+- Lint: ✅ Clean | Server: ✅ HTTP 200 | Runtime: ✅ No errors
 
 ---
 Task ID: 6c
@@ -387,3 +475,62 @@ Stage Summary:
 - Animated slide-in panel from left
 - Progress dots, difficulty badges, score screen
 - Child-friendly French language
+---
+Task ID: 5
+Agent: Chapter Transition Sound Agent
+Task: Created chapter transition sound effect
+
+Work Log:
+- Created ChapterTransitionSound.tsx with Web Audio API synthesis
+- Added mystical 3-layer sound: low drone (150Hz) + ascending shimmer (C4→E4→G4) + final chime (C5)
+- Integrated into page.tsx at all chapter transition points (handleStart, handleContinue, handleChoice)
+- Followed existing forwardRef + useImperativeHandle pattern from ChoiceSound/PageTurnSound/AchievementSound
+
+Stage Summary:
+- Synthesized mystical transition sound: drone + ascending shimmer + chime
+- Wired into handleStart, handleContinue, and handleChoice at all setView('chapter-transition') calls
+- Lint: clean (no new errors; 2 pre-existing errors in StoryHint.tsx unrelated to this change)
+
+---
+Task ID: 6
+Agent: Phase 9 Styling Agent
+Task: Comprehensive styling improvements
+
+Work Log:
+- Enhanced StoryPageView with page-flip entrance animation and bottom ornament separator
+- Enhanced ChoiceButtons with hover lift effect and golden left-border accent
+- Enhanced EndingScreen with radial glow behind emoji, floating title, and gradient border on replay button
+- Added 6 new CSS animation classes to globals.css
+
+Stage Summary:
+- Page entrance: subtle rotateX(3deg) + fade from right (CSS-first `.page-enter` class)
+- Story text: enhanced text-shadow with subtle outer glow for better readability
+- Drop cap: gold gradient background (`linear-gradient` from #e8c87a → #b8860b) with drop-shadow filter
+- Bottom ornament: centered diamond separator with fading lines before continue/choice buttons
+- Choice buttons: translateY(-2px) lift + golden left-border accent with pulse on hover
+- Choice badge: circular golden ring (`.choice-badge-ring`) appears on hover
+- Ending screen: soft radial glow behind emoji (`.ending-glow`) with pulsing scale animation
+- Ending title: gentle floating animation (`.ending-title-float`, 4s ease-in-out)
+- Replay button: animated gradient border (`.restart-gradient-border`) appears on hover
+- Lint: clean on modified files (2 pre-existing errors in StoryHint.tsx unrelated)
+
+---
+Task ID: 4
+Agent: Story Hint Agent
+Task: Created Story Hint System component
+
+Work Log:
+- Created StoryHint.tsx with idle timer and animated lantern hint
+- Added CSS classes for hint animations (lantern glow, pulse, text reveal, arrow bounce, dot indicators)
+- Integrated into page.tsx after AnimatePresence reading section
+- Timer resets on user interaction (click, keydown, touchstart, wheel, mousemove)
+- Choice pages: glow after 15s, text "Que ferais-tu, Souhayl ?" after 25s
+- Continue pages: subtle down arrow after 8s
+
+Stage Summary:
+- Subtle hint appears after 15s on choice pages, 8s on continue pages
+- Lantern glow effect with pulsing animation and expanding ring
+- Text hint fades in with blur-to-clear reveal animation
+- Small pulsing dots indicate choice count
+- Resets on any user interaction, auto-restarts timer
+- Lint: ✅ Clean (all errors resolved)

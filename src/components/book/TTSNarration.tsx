@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, Play, Pause, Square, Gauge } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
+import { useStoryStore } from '@/store/story-store';
 
 interface TTSNarrationProps {
   paragraphs: string[];
@@ -13,6 +14,10 @@ const SPEEDS = [0.5, 0.75, 1, 1.25] as const;
 
 export default function TTSNarration({ paragraphs }: TTSNarrationProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const ttsAutoPlay = useStoryStore((s) => s.ttsAutoPlay);
+  const ttsRate = useStoryStore((s) => s.ttsRate);
+  const prevParagraphsRef = useRef<string>('');
+  const ttsReadyRef = useRef(false);
 
   const {
     isPlaying,
@@ -40,8 +45,24 @@ export default function TTSNarration({ paragraphs }: TTSNarrationProps) {
   useEffect(() => {
     if (!voice && frenchVoices.length > 0) {
       setVoice(frenchVoices[0]);
+      ttsReadyRef.current = true;
     }
   }, [voice, frenchVoices, setVoice]);
+
+  // Auto-play when paragraphs change and ttsAutoPlay is enabled
+  const paragraphsKey = paragraphs.join('|||');
+  useEffect(() => {
+    if (ttsAutoPlay && paragraphs.length > 0 && paragraphsKey !== prevParagraphsRef.current && ttsReadyRef.current) {
+      prevParagraphsRef.current = paragraphsKey;
+      // Small delay to ensure voices are loaded
+      const timer = setTimeout(() => {
+        stop();
+        play(paragraphs);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    prevParagraphsRef.current = paragraphsKey;
+  }, [paragraphsKey, ttsAutoPlay]);
 
   const handleTogglePlayPause = () => {
     if (isPlaying && !isPaused) {
@@ -50,6 +71,8 @@ export default function TTSNarration({ paragraphs }: TTSNarrationProps) {
       resume();
     } else {
       play(paragraphs);
+      // Auto-expand panel on manual play
+      setIsExpanded(true);
     }
   };
 

@@ -5,19 +5,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStoryStore } from '@/store/story-store';
 import { ACHIEVEMENTS } from '@/lib/achievement-definitions';
 import { Award } from 'lucide-react';
+import type { AchievementSoundHandle } from './AchievementSound';
 
 interface ToastItem {
   id: string;
   timestamp: number;
 }
 
-export default function AchievementNotification() {
+interface AchievementNotificationProps {
+  soundRef?: React.RefObject<AchievementSoundHandle | null>;
+}
+
+export default function AchievementNotification({ soundRef }: AchievementNotificationProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const timerRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const addToast = useCallback((id: string) => {
     const achievement = ACHIEVEMENTS[id];
     if (!achievement) return;
+
+    // Play achievement sound
+    soundRef?.current?.playAchievementSound();
 
     // Skip duplicates
     setToasts((prev) => {
@@ -32,7 +40,7 @@ export default function AchievementNotification() {
     }, 3500);
 
     timerRef.current.set(id, timer);
-  }, []);
+  }, [soundRef]);
 
   // Subscribe to store for pending achievement unlocks (external system subscription)
   useEffect(() => {

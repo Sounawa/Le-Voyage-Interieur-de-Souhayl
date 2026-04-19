@@ -223,12 +223,12 @@ export default function EndingScreen({ page, endingsFound, onRestart }: EndingSc
           <EightPointedStar className="star-ornament" />
         </motion.div>
 
-        {/* Ending emoji with golden halo */}
+        {/* Ending emoji with golden halo and radial glow */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.5, duration: 0.8, type: 'spring', stiffness: 150, damping: 12 }}
-          className="text-6xl mb-6 inline-flex items-center justify-center rounded-full p-4 golden-halo"
+          className="ending-glow text-6xl mb-6 inline-flex items-center justify-center rounded-full p-4 golden-halo"
         >
           {ending.emoji}
         </motion.div>
@@ -248,7 +248,7 @@ export default function EndingScreen({ page, endingsFound, onRestart }: EndingSc
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 1 }}
-          className="font-serif text-3xl sm:text-4xl text-amber-100 font-bold mb-6 shimmer-text-gold"
+          className="font-serif text-3xl sm:text-4xl text-amber-100 font-bold mb-6 shimmer-text-gold ending-title-float"
           style={{ textShadow: '0 0 30px rgba(212, 165, 116, 0.15)' }}
         >
           {ending.title}
@@ -368,7 +368,7 @@ export default function EndingScreen({ page, endingsFound, onRestart }: EndingSc
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
           onClick={onRestart}
-          className="restart-btn inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600 text-amber-100 font-serif rounded-lg shadow-lg shadow-amber-900/20 border border-amber-600/20 cursor-pointer"
+          className="restart-btn restart-gradient-border inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600 text-amber-100 font-serif rounded-lg shadow-lg shadow-amber-900/20 border border-amber-600/20 cursor-pointer"
         >
           <RotateCcw className="w-4 h-4 restart-icon" />
           <span>Recommencer le voyage</span>

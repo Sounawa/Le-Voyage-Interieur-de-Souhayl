@@ -98,7 +98,7 @@ export default function StoryPageView({ page, onContinue }: StoryPageViewProps) 
         exit={{ opacity: 0, x: -30 }}
         transition={{ duration: 0.8, ease: 'easeInOut' }}
         onClick={handlePageClick}
-        className={`flex items-start justify-center min-h-screen px-4 py-20 sm:py-24 relative ${isLinear ? 'cursor-pointer active:scale-[0.99]' : ''}`}
+        className={`page-enter flex items-start justify-center min-h-screen px-4 py-20 sm:py-24 relative ${isLinear ? 'cursor-pointer active:scale-[0.99]' : ''}`}
       >
         {/* Atmospheric ambient glow */}
         <div className="page-ambient-glow" />
@@ -135,7 +135,7 @@ export default function StoryPageView({ page, onContinue }: StoryPageViewProps) 
             )}
 
             {/* Narrative paragraphs */}
-            <div className="space-y-5">
+            <div className="space-y-5 story-paragraphs-container">
               {page.paragraphs.map((paragraph, index) => {
                 const paragraphTerms = paragraphGlossaryTerms[index];
                 const hasTerms = paragraphTerms.length > 0;
@@ -148,7 +148,7 @@ export default function StoryPageView({ page, onContinue }: StoryPageViewProps) 
                     className={`font-serif ${paragraphFontClass} text-amber-100/80 leading-relaxed text-justify sm:text-left relative ${
                       index === 0 ? 'story-drop-cap-enhanced' : ''
                     }`}
-                    style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}
+                    style={{ textShadow: '0 1px 4px rgba(0,0,0,0.35), 0 0 12px rgba(0,0,0,0.08)' }}
                   >
                     {paragraph}
                     {hasTerms && (
@@ -229,6 +229,16 @@ export default function StoryPageView({ page, onContinue }: StoryPageViewProps) 
                 </div>
               </motion.div>
             )}
+
+            {/* Decorative bottom ornament separator */}
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: baseDelay + 0.5, duration: 0.6 }}
+              className="ornament-bottom"
+            >
+              <span className="ornament-bottom-diamond" />
+            </motion.div>
 
             {/* Continue section (for linear pages) */}
             {isLinear && (

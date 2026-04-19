@@ -28,15 +28,19 @@ import MoodIndicator from '@/components/book/MoodIndicator';
 import PageTurnSound from '@/components/book/PageTurnSound';
 import ChoiceSound from '@/components/book/ChoiceSound';
 import AchievementSound from '@/components/book/AchievementSound';
+import ChapterTransitionSound from '@/components/book/ChapterTransitionSound';
 import AchievementNotification from '@/components/book/AchievementNotification';
 import AchievementsPanel from '@/components/book/AchievementsPanel';
 import TTSNarration from '@/components/book/TTSNarration';
 import ChapterMap from '@/components/book/ChapterMap';
 import SpiritualQuiz from '@/components/book/SpiritualQuiz';
 import FocusModeToggle from '@/components/book/FocusModeToggle';
+import StoryHint from '@/components/book/StoryHint';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import type { PageTurnSoundHandle } from '@/components/book/PageTurnSound';
 import type { ChoiceSoundHandle } from '@/components/book/ChoiceSound';
 import type { AchievementSoundHandle } from '@/components/book/AchievementSound';
+import type { ChapterTransitionSoundHandle } from '@/components/book/ChapterTransitionSound';
 
 type AppView = 'cover' | 'reading' | 'chapter-transition' | 'ending';
 
@@ -61,10 +65,13 @@ export default function Home() {
   const pageTurnSoundRef = useRef<PageTurnSoundHandle>(null);
   const choiceSoundRef = useRef<ChoiceSoundHandle>(null);
   const achievementSoundRef = useRef<AchievementSoundHandle>(null);
+  const chapterTransitionSoundRef = useRef<ChapterTransitionSoundHandle>(null);
+
+  // Refs for swipe navigation (initialized as no-ops, updated after handler definitions)
+  const handleContinueRef = useRef<() => void>(() => {});
+  const handleGoBackRef = useRef<() => void>(() => {});
 
   const currentPage = storyPages[currentPageId];
-
-  // Simulate asset loading with a brief delay
   useEffect(() => {
     const timer = setTimeout(() => setIsAppReady(true), 1000);
     return () => clearTimeout(timer);
@@ -76,6 +83,7 @@ export default function Home() {
     if (startPage?.isChapterStart && startPage.chapter >= 1) {
       setTransitioningChapter({ chapter: startPage.chapter, title: startPage.chapterTitle });
       setView('chapter-transition');
+      chapterTransitionSoundRef.current?.playChapterTransition();
     }
   }, [currentPageId]);
 
@@ -97,12 +105,43 @@ export default function Home() {
       setTransitioningChapter({ chapter: nextPage.chapter, title: nextPage.chapterTitle });
       setView('chapter-transition');
       setPreviousChapter(nextPage.chapter);
+      chapterTransitionSoundRef.current?.playChapterTransition();
       goToPage(nextPage.id, nextPage.chapter);
       return;
     }
 
     goToPage(nextPage.id, nextPage.chapter);
   }, [currentPage, previousChapter, goToPage]);
+
+  const handleGoBack = useCallback(() => {
+    setView('reading');
+    setTransitioningChapter(null);
+    pageTurnSoundRef.current?.playPageTurn();
+  }, []);
+
+  // Keep refs in sync for swipe navigation
+  useEffect(() => {
+    handleContinueRef.current = handleContinue;
+    handleGoBackRef.current = handleGoBack;
+  }, [handleContinue, handleGoBack]);
+
+  // Swipe navigation for touch devices (uses refs to avoid stale closures)
+  const swipeHandlers = useSwipeNavigation({
+    onSwipeLeft: () => {
+      const page = storyPages[currentPageId];
+      if (page?.choices && page.choices.length > 0) return;
+      if (page?.next) handleContinueRef.current();
+    },
+    onSwipeRight: () => {
+      handleGoBackRef.current();
+    },
+  });
+
+  // Simulate asset loading with a brief delay
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAppReady(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChoice = useCallback((choice: Choice) => {
     const nextPage = storyPages[choice.nextPage];
@@ -117,6 +156,7 @@ export default function Home() {
         setTransitioningChapter({ chapter: nextPage.chapter, title: nextPage.chapterTitle });
         setView('chapter-transition');
         setPreviousChapter(nextPage.chapter);
+        chapterTransitionSoundRef.current?.playChapterTransition();
         return;
       }
       makeChoice(choice.id, nextPage.id, choice.tag, nextPage.chapter);
@@ -128,14 +168,6 @@ export default function Home() {
   const handleChapterTransitionComplete = useCallback(() => {
     setView('reading');
     setTransitioningChapter(null);
-  }, []);
-
-  const handleGoBack = useCallback(() => {
-    // The goBack action in the store already updates currentPageId.
-    // We need to set the view back to 'reading' if it was in chapter-transition.
-    setView('reading');
-    setTransitioningChapter(null);
-    pageTurnSoundRef.current?.playPageTurn();
   }, []);
 
   useEffect(() => {
@@ -223,7 +255,7 @@ export default function Home() {
           </p>
         </div>
       )}
-      <main className={`flex-1 text-amber-100/90 transition-colors duration-1000 ${focusMode ? 'focus-mode-active' : ''}`}>
+      <main className={`flex-1 text-amber-100/90 transition-colors duration-1000 ${focusMode ? 'focus-mode-active' : ''}`} {...swipeHandlers.handlers}>
         {/* Background layers */}
         <div className="fixed inset-0 -z-10">
           <div className={`absolute inset-0 ${getMoodClasses()}`} style={{ transition: 'background 1.5s ease' }} />
@@ -236,6 +268,7 @@ export default function Home() {
         <PageTurnSound ref={pageTurnSoundRef} />
         <ChoiceSound ref={choiceSoundRef} />
         <AchievementSound ref={achievementSoundRef} />
+        <ChapterTransitionSound ref={chapterTransitionSoundRef} />
 
         {isAppReady && view === 'cover' && (
           <motion.div
@@ -363,6 +396,13 @@ export default function Home() {
             </div>
           )}
 
+          {showReadingUI && currentPage && (
+            <StoryHint
+              hasChoices={!!currentPage.choices && currentPage.choices.length > 0}
+              choiceCount={currentPage.choices?.length}
+            />
+          )}
+
           {view === 'chapter-transition' && transitioningChapter && (
             <ChapterTitle
               key={`chapter-${transitioningChapter.chapter}`}
@@ -408,8 +448,8 @@ export default function Home() {
           onOpenAchievements={() => setAchievementsOpen(true)}
         />
 
-        {/* Achievement Notification Toast */}
-        <AchievementNotification />
+        {/* Achievement Notification Toast — wired with sound */}
+        <AchievementNotification soundRef={achievementSoundRef} />
 
         {/* Achievements Panel */}
         <AchievementsPanel isOpen={achievementsOpen} onClose={() => setAchievementsOpen(false)} />
