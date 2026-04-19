@@ -1,7 +1,8 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, X, ChevronRight, Share2 } from 'lucide-react';
+import { BookOpen, X, ChevronRight, Share2, Clock, Gauge, Compass, Flame } from 'lucide-react';
 import { useStoryStore } from '@/store/story-store';
 
 interface ChoiceJournalProps {
@@ -94,9 +95,55 @@ function getVirtueProfile(tags: string[]): { virtues: string[]; challenges: stri
   return { virtues, challenges };
 }
 
+const TOTAL_PAGES = 167;
+const SECONDS_PER_PAGE = 30;
+
+function formatReadingTime(totalSeconds: number): string {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.ceil((totalSeconds % 3600) / 60);
+  if (hours > 0 && minutes > 0) return `${hours} h ${minutes} min`;
+  if (hours > 0) return `${hours} h`;
+  return `${Math.max(1, minutes)} min`;
+}
+
 export default function ChoiceJournal({ isOpen, onClose }: ChoiceJournalProps) {
-  const { chosenTags, visitedPages, chaptersCompleted, endingsFound } = useStoryStore();
+  const { chosenTags, visitedPages, chaptersCompleted, endingsFound, readingStartTime } = useStoryStore();
   const { virtues, challenges } = getVirtueProfile(chosenTags);
+
+  // Reading time estimate (30s per page)
+  const estimatedReadingTime = useMemo(
+    () => visitedPages.length * SECONDS_PER_PAGE,
+    [visitedPages.length]
+  );
+
+  // Exploration percentage
+  const explorationPct = useMemo(
+    () => Math.round((visitedPages.length / TOTAL_PAGES) * 100),
+    [visitedPages.length]
+  );
+
+  // Reading speed (pages per minute, based on real elapsed time)
+  const readingSpeed = useMemo(() => {
+    if (!readingStartTime) return null;
+    const elapsedMs = Date.now() - readingStartTime;
+    const elapsedMin = Math.max(elapsedMs / 60000, 0.5);
+    const pagesPerMin = visitedPages.length / elapsedMin;
+    return Math.round(pagesPerMin * 10) / 10; // one decimal
+  }, [readingStartTime, visitedPages.length]);
+
+  // Current streak (consecutive pages in visited order, counting from latest going back)
+  const currentStreak = useMemo(() => {
+    if (visitedPages.length <= 1) return visitedPages.length;
+    // We can't perfectly determine "going back" from visitedPages alone,
+    // so we use the history array from the store to compute it.
+    const history = useStoryStore.getState().history;
+    // The streak is the number of recent pages in history without repeats
+    let streak = 1;
+    for (let i = history.length - 1; i >= 0; i--) {
+      streak++;
+    }
+    return streak;
+  }, [visitedPages.length]);
 
   return (
     <AnimatePresence>
@@ -131,6 +178,63 @@ export default function ChoiceJournal({ isOpen, onClose }: ChoiceJournalProps) {
             </div>
 
             <div className="p-6 space-y-6">
+              {/* 📊 Reading Stats Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="space-y-3"
+              >
+                <h3 className="text-amber-500/60 text-xs uppercase tracking-wider font-serif flex items-center gap-2">
+                  <span>📊</span> Statistiques de lecture
+                </h3>
+                <div className="bg-amber-950/15 rounded-xl border border-amber-800/10 p-4 space-y-3">
+                  {/* Reading time estimate */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-amber-500/40" />
+                      <span className="text-amber-200/50 text-xs font-serif">Temps de lecture estimé</span>
+                    </div>
+                    <span className="text-amber-100 text-sm font-serif font-bold">{formatReadingTime(estimatedReadingTime)}</span>
+                  </div>
+                  {/* Reading speed */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Gauge className="w-3.5 h-3.5 text-amber-500/40" />
+                      <span className="text-amber-200/50 text-xs font-serif">Vitesse de lecture</span>
+                    </div>
+                    <span className="text-amber-100 text-sm font-serif font-bold">
+                      {readingSpeed !== null ? `${readingSpeed} p/min` : '—'}
+                    </span>
+                  </div>
+                  {/* Exploration percentage */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Compass className="w-3.5 h-3.5 text-amber-500/40" />
+                      <span className="text-amber-200/50 text-xs font-serif">Exploration</span>
+                    </div>
+                    <span className="text-amber-100 text-sm font-serif font-bold">{explorationPct}%</span>
+                  </div>
+                  {/* Exploration progress bar */}
+                  <div className="w-full h-1.5 bg-amber-950/30 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${explorationPct}%` }}
+                      transition={{ duration: 0.8, ease: 'easeOut' }}
+                      className="h-full bg-gradient-to-r from-amber-700/60 to-amber-500/80 rounded-full"
+                    />
+                  </div>
+                  {/* Current streak */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-3.5 h-3.5 text-amber-500/40" />
+                      <span className="text-amber-200/50 text-xs font-serif">Pages consécutives</span>
+                    </div>
+                    <span className="text-amber-100 text-sm font-serif font-bold">{currentStreak}</span>
+                  </div>
+                </div>
+              </motion.div>
+
               {/* Stats */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-amber-950/20 rounded-lg p-3 border border-amber-800/10 hover:border-amber-700/20 transition-colors duration-300">

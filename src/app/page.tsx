@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
-import { BookOpen, Moon, Scroll, Settings, Star } from 'lucide-react';
+import { BookOpen, BookMarked, Bookmark, Moon, Scroll, Settings, Star } from 'lucide-react';
 import { useStoryStore } from '@/store/story-store';
 import { storyPages, firstPageId } from '@/data/story-data';
 import type { Choice, MoodType } from '@/lib/story-types';
@@ -20,6 +20,10 @@ import ChoiceJournal from '@/components/book/ChoiceJournal';
 import BackButton from '@/components/book/BackButton';
 import SettingsPanel from '@/components/book/SettingsPanel';
 import VirtueMeter from '@/components/book/VirtueMeter';
+import SpiritualGlossary from '@/components/book/SpiritualGlossary';
+import AmbientSound from '@/components/book/AmbientSound';
+import BookmarkButton from '@/components/book/BookmarkButton';
+import BookmarksPanel from '@/components/book/BookmarksPanel';
 
 type AppView = 'cover' | 'reading' | 'chapter-transition' | 'ending';
 
@@ -35,6 +39,8 @@ export default function Home() {
   const [previousChapter, setPreviousChapter] = useState<number>(-1);
   const [journalOpen, setJournalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [glossaryOpen, setGlossaryOpen] = useState(false);
+  const [bookmarkOpen, setBookmarkOpen] = useState(false);
 
   const currentPage = storyPages[currentPageId];
 
@@ -155,6 +161,8 @@ export default function Home() {
   const showBackButton = showReadingUI && !isOnPrologueFirst;
   const showJournalButton = showReadingUI;
   const showSettingsButton = showReadingUI;
+  const showGlossaryButton = showReadingUI;
+  const showBookmarkButton = showReadingUI;
   const showVirtueMeter = showReadingUI;
   const showFooter = view === 'reading' || view === 'chapter-transition';
 
@@ -169,6 +177,7 @@ export default function Home() {
         <ParticleBackground mood={currentMood} />
         <IslamicPattern />
         <VignetteOverlay />
+        <AmbientSound mood={currentMood} />
 
         {view === 'cover' && (
           <BookCover onStart={handleStart} />
@@ -178,7 +187,7 @@ export default function Home() {
           <>
             <ProgressBar currentPageId={currentPageId} totalPages={Object.keys(storyPages).length} />
 
-            {/* Top bar buttons: back, journal, settings */}
+            {/* Top bar buttons: back, glossary, journal, settings */}
             <div className="fixed top-14 right-4 z-30 flex items-center gap-2">
               {/* Settings gear button */}
               {showSettingsButton && (
@@ -203,12 +212,36 @@ export default function Home() {
                   <Scroll className="w-4 h-4 text-amber-500/50 group-hover:text-amber-400/70 transition-colors" />
                 </button>
               )}
+
+              {/* Glossary button */}
+              {showGlossaryButton && (
+                <button
+                  onClick={() => setGlossaryOpen(true)}
+                  className="p-2.5 rounded-lg bg-[#0d0c14]/80 backdrop-blur-sm border border-amber-800/15 hover:bg-amber-900/20 hover:border-amber-700/30 transition-all duration-300 group"
+                  title="Abécédaire spirituel"
+                  aria-label="Ouvrir l'abécédaire spirituel"
+                >
+                  <BookMarked className="w-4 h-4 text-amber-500/50 group-hover:text-amber-400/70 transition-colors" />
+                </button>
+              )}
             </div>
           </>
         )}
 
         {/* Back button */}
         {showBackButton && <BackButton onGoBack={handleGoBack} />}
+
+        {/* Bookmarks panel button — next to back button */}
+        {showBookmarkButton && (
+          <button
+            onClick={() => setBookmarkOpen(true)}
+            className="fixed top-14 left-14 z-30 p-2.5 rounded-lg bg-transparent hover:bg-amber-900/20 border border-transparent hover:border-amber-800/15 transition-all duration-300 group"
+            title="Favoris"
+            aria-label="Ouvrir les favoris"
+          >
+            <Bookmark className="w-4 h-4 text-amber-500/40 group-hover:text-amber-400/70 transition-colors" />
+          </button>
+        )}
 
         {/* Bismillah at chapter starts */}
         {view === 'reading' && currentPage?.isChapterStart && currentPage.chapter >= 1 && (
@@ -247,6 +280,9 @@ export default function Home() {
           )}
         </AnimatePresence>
 
+        {/* Bookmark Button — bottom right */}
+        {showReadingUI && <BookmarkButton pageId={currentPageId} />}
+
         {/* Virtue Meter */}
         {showVirtueMeter && <VirtueMeter />}
 
@@ -255,6 +291,23 @@ export default function Home() {
 
         {/* Settings Panel */}
         <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+
+        {/* Spiritual Glossary */}
+        <SpiritualGlossary isOpen={glossaryOpen} onClose={() => setGlossaryOpen(false)} />
+
+        {/* Bookmarks Panel */}
+        <BookmarksPanel
+          isOpen={bookmarkOpen}
+          onClose={() => setBookmarkOpen(false)}
+          onNavigate={(pageId) => {
+            setView('reading');
+            setTransitioningChapter(null);
+            const page = storyPages[pageId];
+            if (page) {
+              goToPage(pageId, page.chapter);
+            }
+          }}
+        />
       </main>
 
       {/* Sticky footer - only during reading */}

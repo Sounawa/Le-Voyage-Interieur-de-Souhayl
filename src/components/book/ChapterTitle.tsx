@@ -9,6 +9,15 @@ interface ChapterTitleProps {
   onComplete: () => void;
 }
 
+// Spiritual quotes per chapter
+const spiritualQuotes: Record<number, string> = {
+  0: '« Au commencement était la lumière du cœur »',
+  1: '« Tel un voyageur, le cœur cherche sa demeure »',
+  2: '« Dans le silence du désert, l\'âme parle »',
+  3: '« Chaque épreuve est un miroir de l\'âme »',
+  4: '« La vérité se révèle au sommet de soi »',
+};
+
 export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitleProps) {
   const [show, setShow] = useState(true);
 
@@ -28,7 +37,7 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
     4: 'Chapitre Quatre',
   };
 
-  // Generate burst particle positions
+  // Generate burst particles as elongated streaks
   const burstParticles = useMemo(() => {
     const particles = [];
     const count = 12;
@@ -39,11 +48,16 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
       const ty = Math.sin(angle) * distance;
       const duration = 0.8 + Math.random() * 0.6;
       const delay = 0.9 + Math.random() * 0.3;
-      const size = 2 + Math.random() * 3;
-      particles.push({ tx, ty, duration, delay, size, angle: i });
+      // Streak dimensions: elongated shape
+      const width = 2 + Math.random() * 2;
+      const height = 10 + Math.random() * 14;
+      const rotation = angle * (180 / Math.PI) + (Math.random() - 0.5) * 30;
+      particles.push({ tx, ty, duration, delay, width, height, rotation, angle: i });
     }
     return particles;
   }, []);
+
+  const quote = spiritualQuotes[chapter];
 
   return (
     <AnimatePresence>
@@ -59,6 +73,14 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
             setTimeout(onComplete, 800);
           }}
         >
+          {/* Vignette / gradient overlay around edges */}
+          <div
+            className="absolute inset-0 pointer-events-none z-20"
+            style={{
+              background: 'radial-gradient(ellipse at center, transparent 40%, rgba(5,5,10,0.5) 70%, rgba(5,5,10,0.85) 100%)',
+            }}
+          />
+
           {/* Radial glow - circular behind chapter number */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-800/8 rounded-full blur-[100px]" />
           {/* Additional circular glow specifically behind chapter number area */}
@@ -97,22 +119,24 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
               {chapterNames[chapter] || `Chapitre ${chapter}`}
             </motion.p>
 
-            {/* Particle burst effect */}
+            {/* Particle burst effect — elongated streaks with rotation */}
             {burstParticles.map((p) => (
               <motion.div
                 key={p.angle}
-                className="absolute top-1/2 left-1/2 rounded-full pointer-events-none"
+                className="absolute top-1/2 left-1/2 pointer-events-none"
                 style={{
-                  width: p.size,
-                  height: p.size,
-                  background: `rgba(212, 165, 116, ${0.4 + Math.random() * 0.3})`,
+                  width: p.width,
+                  height: p.height,
+                  background: `linear-gradient(to bottom, rgba(212, 165, 116, ${0.6 + Math.random() * 0.3}), transparent)`,
+                  borderRadius: '2px',
                 }}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 1 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.5, rotate: 0 }}
                 animate={{
                   x: p.tx,
                   y: p.ty,
-                  opacity: [0, 0.8, 0],
-                  scale: [0.5, 1, 0.2],
+                  opacity: [0, 0.9, 0],
+                  scale: [0.5, 1.2, 0.3],
+                  rotate: p.rotation,
                 }}
                 transition={{
                   duration: p.duration,
@@ -139,6 +163,19 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
               {title}
             </motion.h2>
 
+            {/* Spiritual quote in calligraphic style */}
+            {quote && (
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.4, duration: 1.2 }}
+                className="text-amber-600/45 text-sm sm:text-base font-serif italic mt-6 max-w-md mx-auto leading-relaxed"
+                style={{ textShadow: '0 0 12px rgba(212, 165, 116, 0.08)' }}
+              >
+                {quote}
+              </motion.p>
+            )}
+
             {/* Bottom ornament */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -153,15 +190,34 @@ export default function ChapterTitle({ chapter, title, onComplete }: ChapterTitl
               <div className="h-px w-16 sm:w-20 bg-gradient-to-l from-transparent to-amber-600/40" />
             </motion.div>
 
-            {/* Tap hint */}
-            <motion.p
+            {/* Tap hint with bouncing hand emoji animation */}
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2, duration: 1 }}
-              className="text-amber-700/25 text-[10px] font-serif mt-8 tracking-wide"
+              className="mt-8 flex flex-col items-center gap-1"
             >
-              Touchez pour continuer
-            </motion.p>
+              <motion.span
+                className="text-amber-600/35 text-lg"
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                👆
+              </motion.span>
+              <motion.p
+                className="text-amber-700/25 text-[10px] font-serif tracking-wide"
+                animate={{ opacity: [0.25, 0.45, 0.25] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                Touchez pour continuer
+              </motion.p>
+            </motion.div>
           </div>
         </motion.div>
       )}

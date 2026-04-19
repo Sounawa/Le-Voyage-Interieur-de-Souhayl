@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useCallback, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Sparkles, Hand } from 'lucide-react';
 import { useStoryStore } from '@/store/story-store';
 import type { StoryPage } from '@/lib/story-types';
 import StoryIllustration from '@/components/book/StoryIllustration';
+import { findGlossaryTermsInText } from '@/components/book/SpiritualGlossary';
 
 interface StoryPageViewProps {
   page: StoryPage;
@@ -72,147 +73,206 @@ export default function StoryPageView({ page, onContinue }: StoryPageViewProps) 
     }
   }, [isLinear, onContinue]);
 
+  // Compute delay offsets for Zaki and Shaykh
+  const zakiDelay = useMemo(() => baseDelay + 0.3, [baseDelay]);
+  const shaykhDelay = useMemo(
+    () => baseDelay + (page.zakiSpeaks ? 0.6 : 0),
+    [baseDelay, page.zakiSpeaks]
+  );
+
+  // Whether to show the ornamental divider (only when title exists and paragraphs exist)
+  const showOrnamentalDivider = !!page.title && page.paragraphs.length > 0;
+
+  // Pre-compute glossary terms for all paragraphs (once per page render)
+  const paragraphGlossaryTerms = useMemo(
+    () => page.paragraphs.map((p) => findGlossaryTermsInText(p)),
+    [page.paragraphs]
+  );
+
   return (
-    <motion.div
-      key={page.id}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      onClick={handlePageClick}
-      className={`flex items-start justify-center min-h-screen px-4 py-20 sm:py-24 ${isLinear ? 'cursor-pointer' : ''}`}
-    >
-      <div className="max-w-2xl w-full">
-        {/* Illustration (if available) */}
-        <StoryIllustration pageId={page.id} />
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={page.id}
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -30 }}
+        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        onClick={handlePageClick}
+        className={`flex items-start justify-center min-h-screen px-4 py-20 sm:py-24 ${isLinear ? 'cursor-pointer' : ''}`}
+      >
+        <div className="max-w-2xl w-full">
+          {/* Illustration (if available) */}
+          <StoryIllustration pageId={page.id} />
 
-        {/* Page title */}
-        {page.title && (
-          <motion.h3
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="font-serif text-2xl sm:text-3xl text-amber-100 font-bold mb-8 text-center"
-            style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
-          >
-            {page.title}
-          </motion.h3>
-        )}
-
-        {/* Narrative paragraphs */}
-        <div className="space-y-5">
-          {page.paragraphs.map((paragraph, index) => (
-            <motion.p
-              key={index}
-              initial={{ opacity: 0, y: 15 }}
+          {/* Page title */}
+          {page.title && (
+            <motion.h3
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.15, duration: 0.8 }}
-              className={`font-serif ${paragraphFontClass} text-amber-100/80 leading-relaxed text-justify sm:text-left`}
-              style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="font-serif text-2xl sm:text-3xl text-amber-100 font-bold mb-4 text-center"
+              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
             >
-              {paragraph}
-            </motion.p>
-          ))}
-        </div>
+              {page.title}
+            </motion.h3>
+          )}
 
-        {/* Zaki's speech bubble */}
-        {page.zakiSpeaks && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: baseDelay + 0.3, duration: 0.8 }}
-            className="mt-6 relative ml-8 sm:ml-16"
-          >
-            {/* Fox avatar */}
-            <div className="absolute -left-10 sm:-left-12 top-0 w-8 h-8 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-sm shadow-lg shadow-amber-900/30 border border-amber-700/30">
-              🦊
-            </div>
-            {/* Speech bubble */}
-            <div className="bg-gradient-to-br from-amber-900/30 to-amber-950/40 border border-amber-700/20 rounded-2xl rounded-tl-none px-5 py-3.5">
-              <p className="text-amber-200/80 text-sm sm:text-base italic leading-relaxed font-serif">
-                {page.zakiSpeaks}
-              </p>
-              <p className="text-amber-600/50 text-[10px] mt-1.5 tracking-wider uppercase">— Zaki</p>
-            </div>
-          </motion.div>
-        )}
+          {/* Ornamental divider between title and first paragraph */}
+          {showOrnamentalDivider && (
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.25, duration: 0.6 }}
+              className="ornamental-divider my-6"
+            >
+              <span className="ornamental-diamond" />
+            </motion.div>
+          )}
 
-        {/* Shaykh's wisdom quote */}
-        {page.shaykhSpeaks && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: baseDelay + (page.zakiSpeaks ? 0.6 : 0), duration: 0.8 }}
-            className="mt-8 relative"
-          >
-            <div className="absolute -left-1 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-500/60 via-amber-400/40 to-amber-500/60 rounded-full" />
-            <div className="ml-4 pl-4 border-l border-amber-600/30 py-4 px-5 bg-amber-950/20 rounded-r-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-amber-500/70" />
-                <span className="text-amber-500/70 text-xs uppercase tracking-wider font-serif">
-                  Paroles du Shaykh
-                </span>
+          {/* Narrative paragraphs */}
+          <div className="space-y-5">
+            {page.paragraphs.map((paragraph, index) => {
+              const paragraphTerms = paragraphGlossaryTerms[index];
+              const hasTerms = paragraphTerms.length > 0;
+              return (
+                <motion.p
+                  key={index}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: showOrnamentalDivider ? 0.4 + index * 0.15 : 0.3 + index * 0.15, duration: 0.8 }}
+                  className={`font-serif ${paragraphFontClass} text-amber-100/80 leading-relaxed text-justify sm:text-left relative ${
+                    index === 0 ? 'story-drop-cap' : ''
+                  }`}
+                  style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}
+                >
+                  {paragraph}
+                  {hasTerms && (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: showOrnamentalDivider ? 0.4 + index * 0.15 + 0.6 : 0.3 + index * 0.15 + 0.6, duration: 0.4 }}
+                      className="inline-flex items-center ml-1 align-super"
+                      title={`Termes spirituels : ${paragraphTerms.map(t => t.term).join(', ')}`}
+                    >
+                      <span className="glossary-indicator text-[10px] leading-none cursor-help">📖</span>
+                    </motion.span>
+                  )}
+                </motion.p>
+              );
+            })}
+          </div>
+
+          {/* Zaki's speech bubble */}
+          {page.zakiSpeaks && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: zakiDelay, duration: 0.8 }}
+              className="mt-6 relative ml-8 sm:ml-16"
+            >
+              {/* Fox avatar with warm glow */}
+              <div className="absolute -left-10 sm:-left-12 top-0 w-8 h-8 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-sm border border-amber-700/30 zaki-avatar-glow">
+                🦊
               </div>
-              <p className="font-serif text-amber-200/90 italic leading-relaxed text-base">
-                &ldquo;{page.shaykhSpeaks}&rdquo;
-              </p>
-            </div>
-          </motion.div>
-        )}
+              {/* Speech bubble with tail */}
+              <div className="zaki-bubble-tail bg-gradient-to-br from-amber-900/30 to-amber-950/40 border border-amber-700/20 rounded-2xl px-5 py-3.5">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: zakiDelay + 0.2, duration: 0.6 }}
+                  className="text-amber-200/80 text-sm sm:text-base italic leading-relaxed font-serif"
+                >
+                  {page.zakiSpeaks}
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: zakiDelay + 0.5, duration: 0.4 }}
+                  className="text-amber-600/50 text-[10px] mt-1.5 tracking-wider uppercase"
+                >
+                  — Zaki
+                </motion.p>
+              </div>
+            </motion.div>
+          )}
 
-        {/* Continue section (for linear pages) */}
-        {isLinear && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: baseDelay + 0.8, duration: 0.6 }}
-            className="mt-10 flex flex-col items-center gap-3"
-          >
-            {/* Continue button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onContinue();
-              }}
-              className="group inline-flex items-center gap-2 px-6 py-3 text-amber-400/70 hover:text-amber-300 font-serif text-sm transition-colors duration-300"
+          {/* Shaykh's wisdom quote */}
+          {page.shaykhSpeaks && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: shaykhDelay, duration: 0.8 }}
+              className="mt-8 relative"
             >
-              <span>Continuer</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+              {/* Pulsing gradient border on left side */}
+              <div className="absolute -left-1 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500/60 via-amber-400/80 to-amber-500/60 rounded-full shaykh-border-pulse" />
+              {/* Quote block with amber glow */}
+              <div className="ml-4 pl-5 py-5 px-6 bg-amber-950/20 rounded-r-lg shaykh-quote-glow relative">
+                {/* Opening quotation mark */}
+                <span className="shaykh-quote-mark absolute -top-2 left-2">&ldquo;</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-amber-500/70" />
+                  <span className="text-amber-500/70 text-xs uppercase tracking-wider font-serif">
+                    Paroles du Shaykh
+                  </span>
+                </div>
+                <p className="font-serif text-amber-200/90 italic leading-relaxed text-base pl-4">
+                  {page.shaykhSpeaks}
+                </p>
+                {/* Closing quotation mark */}
+                <span className="shaykh-quote-mark absolute -bottom-5 right-2">&rdquo;</span>
+              </div>
+            </motion.div>
+          )}
 
-            {/* Tap-to-continue hint with pulse animation */}
-            {!autoContinue && (
-              <motion.p
-                animate={{ opacity: [0.3, 0.7, 0.3] }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
+          {/* Continue section (for linear pages) */}
+          {isLinear && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: baseDelay + 0.8, duration: 0.6 }}
+              className="mt-10 flex flex-col items-center gap-3"
+            >
+              {/* Continue button with underline animation and bouncing arrow */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onContinue();
                 }}
-                className="flex items-center gap-1.5 text-amber-600/40 text-[11px] font-serif select-none"
+                className="continue-underline group inline-flex items-center gap-2 px-6 py-3 text-amber-400/70 hover:text-amber-300 font-serif text-sm transition-colors duration-300"
               >
-                <Hand className="w-3 h-3" />
-                <span>Touchez n&apos;importe où pour continuer</span>
-              </motion.p>
-            )}
+                <span>Continuer</span>
+                <ChevronRight className="w-4 h-4 bounce-arrow" />
+              </button>
 
-            {/* Auto-continue indicator */}
-            {autoContinue && (
-              <motion.p
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-                className="flex items-center gap-1.5 text-amber-600/30 text-[11px] font-serif select-none"
-              >
-                <span>📖 Lecture automatique...</span>
-              </motion.p>
-            )}
-          </motion.div>
-        )}
-      </div>
-    </motion.div>
+              {/* Tap-to-continue hint with smoother fade */}
+              {!autoContinue && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: baseDelay + 1.4, duration: 1.2 }}
+                  className="flex items-center gap-1.5 text-amber-600/40 text-[11px] font-serif select-none"
+                >
+                  <Hand className="w-3 h-3" />
+                  <span>Touchez n&apos;importe où pour continuer</span>
+                </motion.p>
+              )}
+
+              {/* Auto-continue indicator */}
+              {autoContinue && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: baseDelay + 1.4, duration: 1.2 }}
+                  className="flex items-center gap-1.5 text-amber-600/30 text-[11px] font-serif select-none"
+                >
+                  <span>📖 Lecture automatique...</span>
+                </motion.p>
+              )}
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

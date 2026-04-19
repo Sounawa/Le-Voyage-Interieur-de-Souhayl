@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { storyPages } from '@/data/story-data';
 
 interface StoryStore {
   // Story state
@@ -18,6 +19,12 @@ interface StoryStore {
   soundEnabled: boolean;
   autoContinue: boolean;
 
+  // Bookmarks
+  bookmarks: string[];
+
+  // Reading stats
+  readingStartTime: number | null;
+
   // Story actions
   goToPage: (pageId: string, chapter?: number) => void;
   makeChoice: (choiceId: string, nextPage: string, tag?: string, chapter?: number) => void;
@@ -30,6 +37,11 @@ interface StoryStore {
   setFontSize: (size: 'sm' | 'md' | 'lg') => void;
   setSoundEnabled: (enabled: boolean) => void;
   setAutoContinue: (enabled: boolean) => void;
+
+  // Bookmark actions
+  toggleBookmark: (pageId: string) => void;
+  isBookmarked: (pageId: string) => boolean;
+  getBookmarkTitle: (pageId: string) => string;
 }
 
 const MAX_HISTORY = 50;
@@ -50,6 +62,8 @@ const settingsInitialState = {
   fontSize: 'md' as 'sm' | 'md' | 'lg',
   soundEnabled: true,
   autoContinue: false,
+  bookmarks: [] as string[],
+  readingStartTime: null as number | null,
 };
 
 export const useStoryStore = create<StoryStore>()(
@@ -70,6 +84,7 @@ export const useStoryStore = create<StoryStore>()(
             visitedPages: newVisited,
             chaptersCompleted: newChapters,
             history: newHistory,
+            readingStartTime: state.readingStartTime ?? Date.now(),
           };
         });
       },
@@ -88,6 +103,7 @@ export const useStoryStore = create<StoryStore>()(
             chosenTags: newTags,
             chaptersCompleted: newChapters,
             history: newHistory,
+            readingStartTime: state.readingStartTime ?? Date.now(),
           };
         });
       },
@@ -126,12 +142,34 @@ export const useStoryStore = create<StoryStore>()(
           ...storyInitialState,
           startedAt: Date.now(),
           visitedPages: ['prologue'],
+          readingStartTime: null,
         });
       },
 
       setFontSize: (size) => set({ fontSize: size }),
       setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
       setAutoContinue: (enabled) => set({ autoContinue: enabled }),
+
+      toggleBookmark: (pageId) => {
+        set((state) => {
+          const isBookmarked = state.bookmarks.includes(pageId);
+          return {
+            bookmarks: isBookmarked
+              ? state.bookmarks.filter((id) => id !== pageId)
+              : [...state.bookmarks, pageId],
+          };
+        });
+      },
+
+      isBookmarked: (pageId) => {
+        return get().bookmarks.includes(pageId);
+      },
+
+      getBookmarkTitle: (pageId) => {
+        const page = storyPages[pageId];
+        if (!page) return pageId;
+        return page.title || page.chapterTitle || pageId;
+      },
     }),
     {
       name: 'souhayl-journey-v1',

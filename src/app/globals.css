@@ -618,3 +618,489 @@ a:focus-visible {
 .share-button:hover::after {
   transform: translateX(100%);
 }
+
+/* ========================================
+   RIPPLE EFFECT (for choice buttons)
+   ======================================== */
+
+@keyframes ripple-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.35) 0%, rgba(212, 165, 116, 0.1) 60%, transparent 100%);
+  pointer-events: none;
+  animation: ripple-expand 0.7s ease-out forwards;
+}
+
+/* ========================================
+   FLOATING BOB ANIMATION (for messages)
+   ======================================== */
+
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float-bob {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+/* ========================================
+   CHOICE NUMBER BADGE GLOW + RING
+   ======================================== */
+
+@keyframes badge-ring-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0.3),
+                inset 0 0 6px rgba(212, 165, 116, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(218, 165, 32, 0),
+                inset 0 0 10px rgba(212, 165, 116, 0.3);
+  }
+}
+
+.choice-badge {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.group:hover .choice-badge {
+  animation: badge-ring-pulse 1.5s ease-in-out infinite;
+  border-color: rgba(218, 165, 32, 0.5);
+  background: rgba(180, 130, 50, 0.2);
+}
+
+/* ========================================
+   SOUND WAVE EQUALIZER (3 bars)
+   ======================================== */
+
+@keyframes eq-bar-1 {
+  0%, 100% { height: 3px; }
+  50% { height: 10px; }
+}
+
+@keyframes eq-bar-2 {
+  0%, 100% { height: 6px; }
+  50% { height: 14px; }
+}
+
+@keyframes eq-bar-3 {
+  0%, 100% { height: 4px; }
+  50% { height: 8px; }
+}
+
+.eq-bar {
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(212, 165, 116, 0.5);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.group:hover .eq-bar-1 {
+  animation: eq-bar-1 0.6s ease-in-out infinite;
+}
+
+.group:hover .eq-bar-2 {
+  animation: eq-bar-2 0.5s ease-in-out infinite 0.1s;
+}
+
+.group:hover .eq-bar-3 {
+  animation: eq-bar-3 0.7s ease-in-out infinite 0.2s;
+}
+
+/* ========================================
+   KBD KEY CAP STYLE
+   ======================================== */
+
+.kbd-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.4rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-bottom-width: 2px;
+  background: linear-gradient(180deg, rgba(30, 25, 40, 0.8) 0%, rgba(18, 17, 26, 0.9) 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(212, 165, 116, 0.05);
+  font-family: var(--font-inter), monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(212, 165, 116, 0.5);
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ========================================
+   NARRATIVE GLASS CARD (ending screen)
+   ======================================== */
+
+.narrative-glass-card {
+  position: relative;
+  background: rgba(20, 18, 28, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.narrative-glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(218, 165, 32, 0.05) 0%,
+    rgba(212, 165, 116, 0.2) 25%,
+    rgba(218, 165, 32, 0.05) 50%,
+    rgba(212, 165, 116, 0.15) 75%,
+    rgba(218, 165, 32, 0.05) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.narrative-glass-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 40px rgba(212, 165, 116, 0.03);
+  pointer-events: none;
+}
+
+/* ========================================
+   RESTART BUTTON PULSE GLOW
+   ======================================== */
+
+@keyframes restart-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 165, 116, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(212, 165, 116, 0.25),
+                0 0 50px rgba(212, 165, 116, 0.1);
+  }
+}
+
+.restart-btn {
+  transition: all 0.3s ease;
+}
+
+.restart-btn:hover {
+  animation: restart-pulse 1.5s ease-in-out infinite;
+}
+
+.restart-btn:hover .restart-icon {
+  transform: rotate(-360deg);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   8-POINTED STAR ORNAMENT
+   ======================================== */
+
+@keyframes star-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.star-ornament {
+  animation: star-rotate 20s linear infinite;
+}
+
+/* ========================================
+   CONFETTI COLOR VARIANTS
+   ======================================== */
+
+@keyframes confetti-float-warm-white {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-50vh) translateX(15px) scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(-5px) scale(0.4);
+    opacity: 0;
+  }
+}
+
+.confetti-warm-white {
+  animation: confetti-float-warm-white var(--duration, 4s) ease-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+/* ========================================
+   STORY DROP CAP (first letter of page)
+   ======================================== */
+
+.story-drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  font-size: 3.2em;
+  line-height: 0.8;
+  padding-right: 0.08em;
+  padding-top: 0.05em;
+  color: #d4a574;
+  text-shadow: 0 2px 8px rgba(212, 165, 116, 0.3),
+               0 1px 3px rgba(0, 0, 0, 0.4);
+  font-weight: 700;
+}
+
+/* ========================================
+   ZAKI SPEECH BUBBLE TAIL (CSS triangle)
+   ======================================== */
+
+.zaki-bubble-tail {
+  position: relative;
+}
+
+.zaki-bubble-tail::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 12px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 10px solid rgba(120, 53, 15, 0.25);
+  filter: drop-shadow(-2px 0px 2px rgba(0, 0, 0, 0.15));
+}
+
+/* ========================================
+   ZAKI AVATAR WARM GLOW
+   ======================================== */
+
+.zaki-avatar-glow {
+  box-shadow: 0 0 12px rgba(212, 165, 116, 0.35),
+              0 0 24px rgba(212, 165, 116, 0.15),
+              0 0 4px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.5s ease;
+}
+
+/* ========================================
+   SHAYKH WISDOM QUOTE - AMBER GLOW
+   ======================================== */
+
+.shaykh-quote-glow {
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.08),
+              0 0 40px rgba(212, 165, 116, 0.04),
+              inset 0 0 20px rgba(212, 165, 116, 0.03);
+  transition: box-shadow 0.6s ease;
+}
+
+/* ========================================
+   SHAYKH BORDER PULSE (left gradient)
+   ======================================== */
+
+@keyframes shaykh-border-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    filter: brightness(0.8);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+}
+
+.shaykh-border-pulse {
+  animation: shaykh-border-pulse 3s ease-in-out infinite;
+}
+
+/* ========================================
+   SHAYKH DECORATIVE QUOTATION MARKS
+   ======================================== */
+
+.shaykh-quote-mark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.5em;
+  line-height: 1;
+  color: rgba(212, 165, 116, 0.25);
+  text-shadow: 0 0 10px rgba(212, 165, 116, 0.1);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ========================================
+   ORNAMENTAL DIVIDER (amber line + diamond)
+   ======================================== */
+
+.ornamental-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 24px;
+  margin: 0 auto;
+  max-width: 200px;
+}
+
+.ornamental-divider::before,
+.ornamental-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 165, 116, 0.15) 20%,
+    rgba(212, 165, 116, 0.4) 50%,
+    rgba(212, 165, 116, 0.15) 80%,
+    transparent 100%
+  );
+}
+
+.ornamental-diamond {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  margin: 0 12px;
+  background: linear-gradient(135deg, #d4a574, #b8860b);
+  transform: rotate(45deg);
+  box-shadow: 0 0 6px rgba(212, 165, 116, 0.3);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   CONTINUE BUTTON UNDERLINE ANIMATION
+   ======================================== */
+
+.continue-underline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.continue-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #d4a574, #b8860b);
+  transition: width 0.3s ease;
+}
+
+.continue-underline:hover::after {
+  width: 100%;
+}
+
+/* ========================================
+   BOUNCE ARROW ANIMATION
+   ======================================== */
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(2px);
+  }
+}
+
+.bounce-arrow {
+  animation: bounce-subtle 1.8s ease-in-out infinite;
+}
+
+/* ========================================
+   GLOSSARY INDICATOR (inline 📖 in paragraphs)
+   ======================================== */
+
+.glossary-indicator {
+  opacity: 0.6;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  filter: drop-shadow(0 0 4px rgba(212, 165, 116, 0.3));
+}
+
+.glossary-indicator:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* ========================================
+   GLOSSARY TERM CARD HOVER GLOW
+   ======================================== */
+
+.glossary-term-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(212, 165, 116, 0.04) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glossary-term-card:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR FOR GLOSSARY (slightly wider)
+   ======================================== */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 165, 116, 0.25) rgba(10, 10, 15, 0.4);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 15, 0.4);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(212, 165, 116, 0.15), rgba(212, 165, 116, 0.3));
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(212, 165, 116, 0.3), rgba(212, 165, 116, 0.5));
+}
