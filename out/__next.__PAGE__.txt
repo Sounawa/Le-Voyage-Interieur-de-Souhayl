@@ -1,0 +1,9 @@
+1:"$Sreact.fragment"
+2:I[47257,["/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/d2be314c3ece3fbe.js"],"ClientPageRoot"]
+3:I[52683,["/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/c81572252f04fb24.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/92e7c785bbafe3a7.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/fc04c60218d007aa.js"],"default"]
+6:I[97367,["/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/d2be314c3ece3fbe.js"],"OutletBoundary"]
+7:"$Sreact.suspense"
+0:{"buildId":"fBZ8xbEqM9bvqXQ8qnktS","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","async":true}],["$","script","script-1",{"src":"/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/fc04c60218d007aa.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+4:{}
+5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null

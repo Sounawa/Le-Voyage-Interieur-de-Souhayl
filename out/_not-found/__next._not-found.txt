@@ -1,0 +1,4 @@
+1:"$Sreact.fragment"
+2:I[39756,["/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/c81572252f04fb24.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/92e7c785bbafe3a7.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/d2be314c3ece3fbe.js"],"default"]
+3:I[37457,["/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/ff1a16fafef87110.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/c81572252f04fb24.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/92e7c785bbafe3a7.js","/Le-Voyage-Interieur-de-Souhayl/_next/static/chunks/d2be314c3ece3fbe.js"],"default"]
+0:{"buildId":"fBZ8xbEqM9bvqXQ8qnktS","rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"loading":null,"isPartial":false}
