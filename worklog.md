@@ -1,6 +1,79 @@
 # Le Voyage Intérieur de Souhayl - Worklog
 
-## Project Status: ✅ Phase 10 Complete — Bug Fixes, Timer, Search, Visual Polish
+## Project Status: ✅ Phase 11 Complete — Drop Cap Visibility Fix, UI Polish
+
+### Current Status Assessment
+The interactive book continues to be feature-rich and polished:
+- **167 story pages** with rich narrative, dialogue, and action
+- **20 choice points** with exactly 3 choices each, all valid paths
+- **4 distinct endings** (Light, Wisdom, Shadow, Pure/Integration)
+- **6 AI-generated illustrations** at key story moments
+- **35 React components** across the application
+- **4 custom hooks** (useTTS, useSwipeNavigation + 2 existing)
+- **~11,848 lines of TypeScript/CSS code** in core files
+- **Lint: ✅ Clean** | **Compilation: ✅ Passes** (HTTP 200)
+- **Runtime: ✅ No errors in dev log**
+
+### Phase 11 Changes
+
+#### Bug Fix (1 critical)
+
+**1. Drop Cap Visibility — Black Text on Dark Background**
+- **Root cause**: `.story-drop-cap-enhanced::first-letter` at line 2223 in globals.css had `color: #0a0a0f` (nearly black) as a fallback, combined with `background: linear-gradient(...)` using `background-clip: text` and `-webkit-text-fill-color: transparent` for a gold gradient effect. When the `background-clip: text` technique fails in certain rendering contexts, the black fallback color was invisible against the dark `#0a0a0f` background.
+- **User report**: "le D de dans est en noir et le fond est noir ce n'est pas une bonne idée" — the "D" in "Dans" (first letter of the prologue) was invisible
+- **Fix**: Changed fallback `color` from `#0a0a0f` to `#e8a838` (warm orange/gold matching icon colors). Removed the unreliable `background-clip: text` gradient technique entirely in favor of solid orange with amber text-shadow glow (`0 0 12px rgba(232, 168, 56, 0.35), 0 2px 4px rgba(0,0,0,0.4)`).
+- **Scope**: Fix applies globally to all 167 story pages since every page's first paragraph uses `.story-drop-cap-enhanced` for the drop cap effect.
+
+#### UI Polish (2 improvements)
+
+**2. Home Button Visibility**
+- Home button (left side, top-14) was previously using `bg-transparent` and `text-amber-500/40` making it nearly invisible
+- Updated to match the right-side toolbar buttons: `bg-[#0d0c14]/80 backdrop-blur-sm border border-amber-800/15 hover:bg-amber-900/20 hover:border-amber-700/30`
+- Icon opacity increased from 40% to 50% with hover to 70%
+
+**3. Bookmarks Button Visibility**
+- Same treatment as home button: from transparent/invisible to matching toolbar style
+- Now consistent with all other navigation buttons in the reading UI
+
+### Verification Results
+- ✅ `bun run lint` — Zero errors, zero warnings
+- ✅ Dev server: HTTP 200
+- ✅ Drop cap now visible in warm orange on all pages
+- ✅ All other components checked — no additional dark-on-dark text issues found
+- ✅ Home button and bookmarks button now visible and consistent with toolbar
+
+### Risks & Next Steps
+1. **More illustrations**: Add AI images for bridge, mirrors, Nafs encounter, Zaki meeting
+2. **Tome 2**: Expand with new chapters and spiritual concepts
+3. **Hidden 5th ending**: Special ending triggered by specific tag combinations
+4. **Performance**: Optimize particle animations for low-end devices
+5. **Accessibility**: Full screen reader support, ARIA live regions
+6. **Print/PDF**: Export journey as a formatted PDF document
+7. **Reading streaks**: Track consecutive reading sessions
+8. **CSS deduplication**: Remove duplicate `.story-drop-cap-enhanced` definitions at lines ~1567 and ~1908 in globals.css
+
+---
+Task ID: 11-main
+Agent: Phase 11 Agent
+Task: Fix drop cap visibility, improve home/bookmark button visibility
+
+Work Log:
+- Identified root cause of invisible drop cap: `color: #0a0a0f` fallback with `background-clip: text` gradient technique failing in preview environment
+- Fixed `.story-drop-cap-enhanced::first-letter` in globals.css: changed color from #0a0a0f to #e8a838 (warm orange/gold), added visible text-shadow, removed unreliable background-clip technique
+- Updated home button in page.tsx: from transparent to glass-morphism style matching toolbar (bg-[#0d0c14]/80, border, backdrop-blur)
+- Updated bookmarks button in page.tsx: same glass-morphism treatment
+- Scanned all 35 components for dark-on-dark text issues — none found
+- Verified lint clean (0 errors)
+- Verified HTTP 200 on dev server
+
+Stage Summary:
+- 1 critical bug fix (drop cap visibility — applied globally to all 167 pages)
+- 2 UI polish improvements (home button, bookmarks button visibility)
+- Lint: ✅ Clean | Server: ✅ HTTP 200 | Runtime: ✅ No errors
+
+---
+
+Task ID: 10-main
 
 ### Current Status Assessment
 The interactive book is feature-rich with comprehensive polish:

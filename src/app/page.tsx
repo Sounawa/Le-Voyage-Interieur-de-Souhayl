@@ -416,11 +416,11 @@ export default function Home() {
         {showReadingUI && !focusMode && (
           <button
             onClick={handleGoHome}
-            className="fixed top-14 left-4 z-30 p-2.5 rounded-lg bg-transparent hover:bg-amber-900/20 border border-transparent hover:border-amber-800/15 transition-all duration-300 group"
+            className="fixed top-14 left-4 z-30 p-2.5 rounded-lg bg-[#0d0c14]/80 backdrop-blur-sm border border-amber-800/15 hover:bg-amber-900/20 hover:border-amber-700/30 transition-all duration-300 group"
             title="Accueil"
             aria-label="Retourner à l'accueil"
           >
-            <HomeIcon className="w-4 h-4 text-amber-500/40 group-hover:text-amber-400/70 transition-colors" />
+            <HomeIcon className="w-4 h-4 text-amber-500/50 group-hover:text-amber-400/70 transition-colors" />
           </button>
         )}
 
@@ -428,11 +428,11 @@ export default function Home() {
         {showBookmarkButton && !focusMode && (
           <button
             onClick={() => setBookmarkOpen(true)}
-            className="fixed top-14 left-14 z-30 p-2.5 rounded-lg bg-transparent hover:bg-amber-900/20 border border-transparent hover:border-amber-800/15 transition-all duration-300 group"
+            className="fixed top-14 left-14 z-30 p-2.5 rounded-lg bg-[#0d0c14]/80 backdrop-blur-sm border border-amber-800/15 hover:bg-amber-900/20 hover:border-amber-700/30 transition-all duration-300 group"
             title="Favoris"
             aria-label="Ouvrir les favoris"
           >
-            <Bookmark className="w-4 h-4 text-amber-500/40 group-hover:text-amber-400/70 transition-colors" />
+            <Bookmark className="w-4 h-4 text-amber-500/50 group-hover:text-amber-400/70 transition-colors" />
           </button>
         )}
 

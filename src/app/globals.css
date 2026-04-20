@@ -2217,7 +2217,7 @@ a,
 }
 
 /* ========================================
-   ENHANCED DROP CAP (gold gradient background)
+   ENHANCED DROP CAP (warm orange/gold — visible on dark bg)
    ======================================== */
 
 .story-drop-cap-enhanced::first-letter {
@@ -2230,15 +2230,9 @@ a,
   padding-left: 0.04em;
   padding-bottom: 0.02em;
   margin-right: 0.04em;
-  color: #0a0a0f;
+  color: #e8a838;
   font-weight: 700;
-  background: linear-gradient(145deg, #e8c87a 0%, #d4a574 40%, #b8860b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 2px 4px rgba(212, 165, 116, 0.25))
-          drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  text-shadow: 0 0 12px rgba(232, 168, 56, 0.35), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* ========================================
