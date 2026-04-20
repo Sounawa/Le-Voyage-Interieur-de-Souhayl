@@ -50,12 +50,7 @@ type AppView = 'cover' | 'reading' | 'chapter-transition' | 'ending';
 
 export default function Home() {
   const { currentPageId, visitedPages, endingsFound, goToPage, makeChoice, markEndingFound, restart, focusMode } = useStoryStore();
-  const [savedView] = useState<AppView>(() => {
-    if (typeof window === 'undefined') return 'cover';
-    const hasSave = useStoryStore.getState().hasStarted;
-    return hasSave ? 'reading' : 'cover';
-  });
-  const [view, setView] = useState<AppView>(savedView);
+  const [view, setView] = useState<AppView>('cover');
   const [transitioningChapter, setTransitioningChapter] = useState<{ chapter: number; title: string } | null>(null);
   const [previousChapter, setPreviousChapter] = useState<number>(-1);
   const [journalOpen, setJournalOpen] = useState(false);
@@ -77,6 +72,15 @@ export default function Home() {
   // Refs for swipe navigation (initialized as no-ops, updated after handler definitions)
   const handleContinueRef = useRef<() => void>(() => {});
   const handleGoBackRef = useRef<() => void>(() => {});
+
+  // Hydrate view from persisted store after mount (avoids SSR mismatch)
+  useEffect(() => {
+    const hasSave = useStoryStore.getState().hasStarted;
+    if (hasSave) {
+      const raf = requestAnimationFrame(() => setView('reading'));
+      return () => cancelAnimationFrame(raf);
+    }
+  }, []);
 
   const currentPage = storyPages[currentPageId];
   useEffect(() => {
